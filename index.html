@@ -66,12 +66,42 @@
       cursor: pointer;
       z-index: 20;
     }
+	  
+    .butterfly-btn {
+	  position: absolute;
+	  bottom: 20px;
+	  left: 50%;
+	  transform: translateX(-50%);
+	  width: 90px;
+	  height: 90px;
+	  cursor: pointer;
+	  z-index: 20;
+	  transition: transform 0.3s ease;
+	}
+
+	.butterfly-btn:active {
+	  transform: translateX(-50%) scale(1.1) rotate(5deg);
+	}
+
+	.butterfly-btn.animate {
+	  animation: flutter 0.6s ease;
+	  filter: drop-shadow(0 0 15px #ff66cc);
+	}
+
+	@keyframes flutter {
+	  0% { transform: translateX(-50%) scale(1) rotate(0deg); }
+	  25% { transform: translateX(-50%) scale(1.05) rotate(5deg); }
+	  50% { transform: translateX(-50%) scale(1.1) rotate(-5deg); }
+	  75% { transform: translateX(-50%) scale(1.05) rotate(3deg); }
+	  100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+	}
+	  
   </style>
 </head>
 <body>
 
   <div class="container" id="container"></div>
-  <button onclick="showNext()">Next</button>
+  <img src="butterfly.png" class="butterfly-btn" id="butterfly" onclick="onButterflyClick()">
 
   <script>
     const container = document.getElementById('container');
@@ -119,8 +149,23 @@
 	window.onload = () => {
 		showNext(); // show image1.jpg by default
 	};
-
+		  
+    function onButterflyClick() {
+		const butterfly = document.getElementById('butterfly');
+	
+		// Add animation class
+		butterfly.classList.add('animate');
+	
+		// Trigger carousel advance
+		showNext();
+	
+		// Remove animation class after animation ends
+		setTimeout(() => {
+		  butterfly.classList.remove('animate');
+		}, 600);
+	  }
   </script>
 
 </body>
 </html>
+
