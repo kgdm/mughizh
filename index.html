@@ -139,13 +139,12 @@
 
   <div class="container" id="container"></div>
 
-  <!-- Butterfly control -->
   <div class="butterfly-wrapper" onclick="onButterflyClick()">
     <div class="click-hint">⬇</div>
     <img src="butterfly.png" class="butterfly-btn" id="butterfly" alt="Butterfly Button" />
   </div>
 
-  <!-- Audio & Confetti -->
+  <!-- Optional audio file -->
   <audio id="birthdayAudio" src="happy_birthday.mp3" preload="auto"></audio>
   <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
 
@@ -191,6 +190,9 @@
         showBirthdayBanner();
         hasShownBanner = true;
       } else {
+        // Reset carousel
+        const banner = document.querySelector('img[src="image12.jpeg"]');
+        if (banner) banner.remove();
         nextIndex = 0;
         hasShownBanner = false;
         showNext();
@@ -226,7 +228,7 @@
       showNext();
     };
 
-    // Confetti launcher
+    // 🎉 Confetti logic
     function launchConfetti() {
       const duration = 4 * 1000;
       const end = Date.now() + duration;
@@ -256,7 +258,7 @@
       frame();
     }
 
-    // Load confetti library dynamically
+    // Load confetti script
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
     document.head.appendChild(script);
