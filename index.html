@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Birthday Carousel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Butterfly Birthday Carousel</title>
   <style>
     body {
       margin: 0;
@@ -139,11 +139,13 @@
 
   <div class="container" id="container"></div>
 
+  <!-- Butterfly control -->
   <div class="butterfly-wrapper" onclick="onButterflyClick()">
     <div class="click-hint">⬇</div>
-    <img src="butterfly.png" class="butterfly-btn" id="butterfly">
+    <img src="butterfly.png" class="butterfly-btn" id="butterfly" alt="Butterfly Button" />
   </div>
 
+  <!-- Audio & Confetti -->
   <audio id="birthdayAudio" src="happy_birthday.mp3" preload="auto"></audio>
   <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
 
@@ -201,11 +203,13 @@
       banner.classList.add('image', 'pop');
       container.appendChild(banner);
 
-      // Play music
       const audio = document.getElementById('birthdayAudio');
-      audio.play().catch(e => console.warn("Audio play blocked"));
+      if (audio) {
+        audio.play().catch(() => {
+          console.warn("Birthday audio could not play.");
+        });
+      }
 
-      // Confetti
       launchConfetti();
     }
 
@@ -219,10 +223,10 @@
     }
 
     window.onload = () => {
-      showNext(); // Start with first image
+      showNext();
     };
 
-    // 🎉 Confetti
+    // Confetti launcher
     function launchConfetti() {
       const duration = 4 * 1000;
       const end = Date.now() + duration;
@@ -252,7 +256,7 @@
       frame();
     }
 
-    // Load confetti lib
+    // Load confetti library dynamically
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
     document.head.appendChild(script);
