@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Random Pop Carousel</title>
+  <title>Birthday Carousel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -30,21 +30,20 @@
       z-index: 1;
     }
 
-	.image.pop {
-	  top: 50% !important;
-	  left: 50% !important;
-	  transform: translate(-50%, -50%) !important;
-	  max-width: 90vw !important;
-	  max-height: 80vh !important;
-	  width: auto !important;
-	  height: auto !important;
-	  z-index: 10 !important;
-	  opacity: 1 !important;
-	  animation: bounce 0.5s ease;
-	  object-fit: contain;
-	  background-color: black; /* optional for portrait images */
-	}
-
+    .image.pop {
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      max-width: 90vw !important;
+      max-height: 80vh !important;
+      width: auto !important;
+      height: auto !important;
+      z-index: 10 !important;
+      opacity: 1 !important;
+      animation: bounce 0.5s ease;
+      object-fit: contain;
+      background-color: black;
+    }
 
     @keyframes bounce {
       0%   { transform: translate(-50%, -50%) scale(1); }
@@ -52,66 +51,108 @@
       100% { transform: translate(-50%, -50%) scale(1); }
     }
 
-    button {
+    .butterfly-wrapper {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 14px 24px;
-      font-size: 16px;
-      background-color: #ff4081;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      width: 90px;
+      height: 90px;
       z-index: 20;
+      cursor: pointer;
     }
-	  
+
     .butterfly-btn {
-	  position: absolute;
-	  bottom: 20px;
-	  left: 50%;
-	  transform: translateX(-50%);
-	  width: 90px;
-	  height: 90px;
-	  cursor: pointer;
-	  z-index: 20;
-	}
+      width: 100%;
+      height: 100%;
+      animation: pulse 2s infinite ease-in-out;
+      transition: transform 0.3s ease;
+    }
 
-	.butterfly-btn:active {
-	  transform: translateX(-50%) scale(1.1) rotate(5deg);
-	}
+    .butterfly-btn.animate {
+      animation: flutter 0.6s ease;
+      filter: drop-shadow(0 0 15px #ff66cc);
+    }
 
-	.butterfly-btn.animate {
-	  animation: flutter 0.6s ease;
-	  filter: drop-shadow(0 0 15px #ff66cc);
-	}
+    .click-hint {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      color: #ffccff;
+      animation: bounceArrow 1.2s infinite ease-in-out;
+      text-shadow: 0 0 6px #fff, 0 0 10px #ff69b4;
+      pointer-events: none;
+    }
 
-	@keyframes flutter {
-	  0% { transform: translateX(-50%) scale(1) rotate(0deg); }
-	  25% { transform: translateX(-50%) scale(1.05) rotate(5deg); }
-	  50% { transform: translateX(-50%) scale(1.1) rotate(-5deg); }
-	  75% { transform: translateX(-50%) scale(1.05) rotate(3deg); }
-	  100% { transform: translateX(-50%) scale(1) rotate(0deg); }
-	}
+    @keyframes bounceArrow {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-6px); }
+    }
 
-@keyframes pulse {
-  0%   { transform: scale(1); opacity: 0.8; }
-  50%  { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.8; }
-}
+    .butterfly-wrapper::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #ff69b4;
+      z-index: -1;
+      opacity: 0.5;
+      animation: glowPulse 2s infinite;
+    }
 
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.5; box-shadow: 0 0 15px #ff69b4; }
+      50% { opacity: 1; box-shadow: 0 0 30px #ff1493; }
+    }
+
+    @keyframes pulse {
+      0%   { transform: scale(1); opacity: 0.8; }
+      50%  { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
+    }
+
+    @keyframes flutter {
+      0% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.05) rotate(5deg); }
+      50% { transform: scale(1.1) rotate(-5deg); }
+      75% { transform: scale(1.05) rotate(3deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    canvas.confetti-canvas {
+      position: fixed;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
 
   <div class="container" id="container"></div>
-  <img src="butterfly.png" class="butterfly-btn" id="butterfly" onclick="onButterflyClick()">
+
+  <div class="butterfly-wrapper" onclick="onButterflyClick()">
+    <div class="click-hint">⬇</div>
+    <img src="butterfly.png" class="butterfly-btn" id="butterfly">
+  </div>
+
+  <audio id="birthdayAudio" src="happy_birthday.mp3" preload="auto"></audio>
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
 
   <script>
     const container = document.getElementById('container');
     const images = [];
     let current = null;
+    let nextIndex = 0;
+    let hasShownBanner = false;
 
     for (let i = 1; i <= 11; i++) {
       const img = document.createElement('img');
@@ -139,41 +180,83 @@
         randomizePosition(img);
       });
 
-    // Show next image in order
-    let nextIndex = images.indexOf(current) + 1;
-    if (nextIndex >= images.length) {
-      nextIndex = 0;
+      if (nextIndex < images.length) {
+        const next = images[nextIndex];
+        next.classList.add('pop');
+        current = next;
+        nextIndex++;
+      } else if (!hasShownBanner) {
+        showBirthdayBanner();
+        hasShownBanner = true;
+      } else {
+        nextIndex = 0;
+        hasShownBanner = false;
+        showNext();
+      }
     }
 
-    const next = images[nextIndex];
-    next.classList.add('pop');
-    current = next;
+    function showBirthdayBanner() {
+      const banner = document.createElement('img');
+      banner.src = 'image12.jpeg';
+      banner.classList.add('image', 'pop');
+      container.appendChild(banner);
 
+      // Play music
+      const audio = document.getElementById('birthdayAudio');
+      audio.play().catch(e => console.warn("Audio play blocked"));
+
+      // Confetti
+      launchConfetti();
     }
 
-	window.onload = () => {
-		showNext(); // show image1.jpg by default
-	};
-		  
     function onButterflyClick() {
-		const butterfly = document.getElementById('butterfly');
-	
-		// Add animation class
-		butterfly.classList.add('animate');
-	
-		// Trigger carousel advance
-		showNext();
-	
-		// Remove animation class after animation ends
-		setTimeout(() => {
-		  butterfly.classList.remove('animate');
-		}, 600);
-	  }
+      const butterfly = document.getElementById('butterfly');
+      butterfly.classList.add('animate');
+      showNext();
+      setTimeout(() => {
+        butterfly.classList.remove('animate');
+      }, 600);
+    }
+
+    window.onload = () => {
+      showNext(); // Start with first image
+    };
+
+    // 🎉 Confetti
+    function launchConfetti() {
+      const duration = 4 * 1000;
+      const end = Date.now() + duration;
+      const colors = ['#bb0000', '#ffffff', '#ff69b4', '#ffd700'];
+
+      const frame = () => {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: colors
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: colors
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+
+      frame();
+    }
+
+    // Load confetti lib
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+    document.head.appendChild(script);
   </script>
 
 </body>
 </html>
-
-
-
-
