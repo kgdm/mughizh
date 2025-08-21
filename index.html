@@ -144,7 +144,6 @@
     <img src="butterfly.png" class="butterfly-btn" id="butterfly" alt="Butterfly Button" />
   </div>
 
-  <!-- Optional audio file -->
   <audio id="birthdayAudio" src="happy_birthday.mp3" preload="auto"></audio>
   <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
 
@@ -190,18 +189,19 @@
         showBirthdayBanner();
         hasShownBanner = true;
       } else {
-        // Reset carousel
-        const banner = document.querySelector('img[src="image12.jpeg"]');
+        // Reset carousel after banner
+        const banner = document.getElementById('birthdayBanner');
         if (banner) banner.remove();
         nextIndex = 0;
         hasShownBanner = false;
-        showNext();
+        showNext(); // show image1 again
       }
     }
 
     function showBirthdayBanner() {
       const banner = document.createElement('img');
       banner.src = 'image12.jpeg';
+      banner.id = 'birthdayBanner';
       banner.classList.add('image', 'pop');
       container.appendChild(banner);
 
@@ -228,7 +228,7 @@
       showNext();
     };
 
-    // 🎉 Confetti logic
+    // Confetti logic
     function launchConfetti() {
       const duration = 4 * 1000;
       const end = Date.now() + duration;
@@ -258,7 +258,7 @@
       frame();
     }
 
-    // Load confetti script
+    // Load confetti library
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
     document.head.appendChild(script);
